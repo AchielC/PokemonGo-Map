@@ -9,6 +9,8 @@ import time
 import re
 import requests
 
+import ssl
+
 # Currently supported pgoapi
 pgoapi_version = "1.1.6"
 
@@ -173,4 +175,6 @@ if __name__ == '__main__':
         while search_thread.is_alive():
             time.sleep(60)
     else:
-        app.run(threaded=True, use_reloader=False, debug=args.debug, host=args.host, port=args.port)
+        #context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        #context.load_cert_chain('/etc/pki/pokemon.vtk.be.crt', '/etc/pki/pokemon.vtk.be.key')
+        app.run(threaded=True, use_reloader=False, debug=args.debug, host=args.host, port=args.port)#, ssl_context=context)
