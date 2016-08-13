@@ -11,6 +11,7 @@ import logging
 import shutil
 import requests
 import platform
+import inspect
 
 from . import config
 
@@ -29,9 +30,9 @@ def verify_config_file_exists(filename):
         shutil.copy2(fullpath + '.example', fullpath)
 
 
-def get_args():
+def get_args(vtk_config='server.ini'):
     # fuck PEP8
-    configpath = os.path.join(os.path.dirname(__file__), '../config/config.ini')
+    configpath = os.path.join(os.path.dirname(__file__), '../config/{}'.format(vtk_config))
     parser = configargparse.ArgParser(default_config_files=[configpath])
     parser.add_argument('-a', '--auth-service', type=str.lower, action='append',
                         help='Auth Services, either one for all accounts or one per account. \
