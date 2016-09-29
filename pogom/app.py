@@ -27,6 +27,7 @@ class Pogom(Flask):
         self.json_encoder = CustomJSONEncoder
         self.route("/", methods=['GET'])(self.fullmap)
         self.route("/raw_data", methods=['GET'])(self.raw_data)
+        self.route("/plopkoek", methods=['GET'])(self.plopkoek)
         self.route("/loc", methods=['GET'])(self.loc)
         #self.route("/next_loc", methods=['POST'])(self.next_loc)
         self.route("/mobile", methods=['GET'])(self.list_pokemon)
@@ -74,6 +75,18 @@ class Pogom(Flask):
                                is_fixed=fixed_display,
                                search_control=search_display
                                )
+
+    def plopkoek(self):
+        args = get_args()
+        fixed_display = "none" if args.fixed_location else "inline"
+        search_display = "inline" if args.search_control else "none"
+        return render_template('plopkoek.html',
+                               lat=self.current_location[0],
+                               lng=self.current_location[1],
+                               gmaps_key=config['GMAPS_KEY'],
+                               lang=config['LOCALE'],
+                               is_fixed=fixed_display,
+                               search_control=search_display)
 
     def raw_data(self):
         d = {}

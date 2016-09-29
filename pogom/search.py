@@ -234,8 +234,7 @@ def search_worker_thread(args, account, search_items_queue, parse_lock, encrypti
                     sleep_time = args.scan_delay * (1 + failed_total)
 
                     # Ok, let's get started -- check our login status
-                    check_login(args, account, api, step_location)
-
+                    succes = check_login(args, account, api, step_location)
                     api.activate_signature(encryption_lib_path)
 
                     # Make the actual request (finally!)
@@ -258,16 +257,17 @@ def search_worker_thread(args, account, search_items_queue, parse_lock, encrypti
                         except KeyError:
                             log.exception('Search step %s map parsing failed, retrying request in %g seconds. Username: %s', step, sleep_time, account['username'])
                             failed_total += 1
-                            time.sleep(sleep_time)
-
-                # If there's any time left between the start time and the time when we should be kicking off the next
+                            # time.sleep(sleep_time) heb ik uitgecomment  achiel en die break toegevoegd
+			    break
+			    # If there's any time left between the start time and the time when we should be kicking off the next
                 # loop, hang out until its up.
                 sleep_delay_remaining = loop_start_time + (args.scan_delay * 1000) - int(round(time.time() * 1000))
                 if sleep_delay_remaining > 0:
                     time.sleep(sleep_delay_remaining / 1000)
 
                 loop_start_time += args.scan_delay * 1000
-
+	    if failed_total > 0:
+                break
         # catch any process exceptions, log them, and continue the thread
         except Exception as e:
             log.exception('Exception in search_worker: %s. Username: %s', e, account['username'])
@@ -285,9 +285,11 @@ def check_login(args, account, api, position):
     # Try to login (a few times, but don't get stuck here)
     i = 0
     api.set_position(position[0], position[1], position[2])
+    succes = False
     while i < args.login_retries:
         try:
             api.set_authentication(provider=account['auth_service'], username=account['username'], password=account['password'])
+            succes = True
             break
         except AuthException:
             if i >= args.login_retries:
@@ -298,7 +300,7 @@ def check_login(args, account, api, position):
                 time.sleep(args.login_delay)
 
     log.debug('Login for account %s successful', account['username'])
-
+    return succes
 
 def map_request(api, position):
     try:

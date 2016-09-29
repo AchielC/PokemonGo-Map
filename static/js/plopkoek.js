@@ -797,8 +797,8 @@ var Store = {
 
 function getCurrentDate () {
   var now = new Date();
-  return now;
-  //return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+  //return now;
+  return new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
 }
 
 function excludePokemon (id) { // eslint-disable-line no-unused-vars
@@ -1150,7 +1150,10 @@ function _playAnnounceQueue() {
      playingAnnounceQueue = false;
      return;
   }
-  var audio = new Audio('static/sounds/announce/' + announceQueue[0].replace(/[^a-zA-Z]/g, '') + '.mp3')
+  var name = (announceQueue[0]).replace(/[^a-zA-Z ]/g, "");
+  console.log(announceQueu[0]);
+  console.log(name);
+  var audio = new Audio('static/sounds/announce/' + name + '.mp3')
   audio.play()
   audio.addEventListener('ended', function () {
     announceQueue.shift()
@@ -2003,10 +2006,6 @@ $(function () {
   
   $('#announce-switch').change(function () {
     Store.set('announceSound', this.checked)
-    if(!this.checked) {
-        announceQueue = [];
-        announceQueueIsPlaying = false;
-    }
   })
 
   $('#geoloc-switch').change(function () {
